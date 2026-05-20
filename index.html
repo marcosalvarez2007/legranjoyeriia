@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legrand — Joyería de Lujo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-left">
+    <a href="#" class="logo">LEGRAND</a>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#catalogo" onclick="showSection('catalogo')">Colecciones</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto" onclick="showSection('soporte')">Contacto</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-icon" onclick="toggleSearch()" title="Buscar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+    <button class="nav-icon" onclick="showSection('favoritos')" title="Favoritos">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="badge" id="favBadge">0</span>
+    </button>
+    <button class="nav-icon" onclick="showSection('carrito')" title="Carrito">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="badge" id="cartBadge">0</span>
+    </button>
+    <button class="nav-icon" onclick="toggleUserMenu()" title="Mi cuenta" id="userBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
+    <div class="user-menu" id="userMenu">
+      <a href="#" onclick="showSection('login')" id="loginLink">Iniciar Sesión</a>
+      <a href="#" onclick="showSection('registro')" id="registerLink">Registrarse</a>
+      <a href="#" onclick="showSection('pedidos')" id="pedidosLink" style="display:none">Mis Pedidos</a>
+      <a href="#" onclick="showSection('historial')" id="historialLink" style="display:none">Historial</a>
+      <a href="#" onclick="showSection('admin')" id="adminLink" style="display:none">Panel Admin</a>
+      <a href="#" onclick="logout()" id="logoutLink" style="display:none">Cerrar Sesión</a>
+    </div>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-container">
+    <input type="text" placeholder="Buscar joyas, colecciones..." id="searchInput" oninput="searchProducts()">
+    <button onclick="toggleSearch()">✕</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-sub">Colección 2025</p>
+    <h1 class="hero-title">El Arte de<br><em>lo Eterno</em></h1>
+    <p class="hero-desc">Joyería artesanal de alta gama. Cada pieza es única, diseñada para perdurar generaciones.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showSection('catalogo')">Ver Colección</button>
+      <button class="btn-ghost" onclick="showSection('cotizacion')">Solicitar Cotización</button>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===== CATEGORÍAS ===== -->
+<section class="categories" id="categories">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Explorar</p>
+      <h2 class="section-title">Nuestras Categorías</h2>
+    </div>
+    <div class="cat-grid" id="catGrid">
+      <!-- cargado dinámicamente -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATÁLOGO ===== -->
+<section class="section" id="catalogo" style="display:none">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-2</p>
+      <h2 class="section-title">Catálogo de Productos</h2>
+    </div>
+    <div class="filter-bar">
+      <select id="filterCat" onchange="filterProducts()">
+        <option value="">Todas las categorías</option>
+      </select>
+      <select id="filterOrder" onchange="filterProducts()">
+        <option value="default">Ordenar por</option>
+        <option value="price_asc">Precio: menor a mayor</option>
+        <option value="price_desc">Precio: mayor a menor</option>
+        <option value="name">Nombre A-Z</option>
+      </select>
+      <input type="number" placeholder="Precio min" id="priceMin" oninput="filterProducts()">
+      <input type="number" placeholder="Precio max" id="priceMax" oninput="filterProducts()">
+    </div>
+    <div class="products-grid" id="productsGrid">
+      <!-- productos dinámicos -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== CARRITO ===== -->
+<section class="section" id="carrito" style="display:none">
+  <div class="container narrow">
+    <div class="section-header">
+      <p class="section-label">HU-11</p>
+      <h2 class="section-title">Carrito de Compras</h2>
+    </div>
+    <div id="cartItems"></div>
+    <div class="cart-summary" id="cartSummary" style="display:none">
+      <div class="summary-row"><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
+      <div class="summary-row"><span>Descuento</span><span id="cartDiscount" style="color:#8b6f4e">-$0</span></div>
+      <div class="summary-row total"><span>Total</span><span id="cartTotal">$0</span></div>
+      <input type="text" placeholder="Código de descuento" id="couponInput" style="width:100%;margin:1rem 0;padding:0.75rem;border:1px solid #d4c5b0;background:transparent;font-family:inherit">
+      <button class="btn-secondary" onclick="applyCoupon()">Aplicar cupón</button>
+      <button class="btn-primary" style="width:100%;margin-top:1rem" onclick="checkout()">Proceder al Pago</button>
+    </div>
+    <div id="cartEmpty" class="empty-state">
+      <p>Tu carrito está vacío</p>
+      <button class="btn-ghost" onclick="showSection('catalogo')">Ver Catálogo</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAVORITOS ===== -->
+<section class="section" id="favoritos" style="display:none">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-19</p>
+      <h2 class="section-title">Mis Favoritos</h2>
+    </div>
+    <div class="products-grid" id="favGrid"></div>
+    <div id="favEmpty" class="empty-state"><p>No tenés favoritos guardados</p></div>
+  </div>
+</section>
+
+<!-- ===== LOGIN ===== -->
+<section class="section" id="login" style="display:none">
+  <div class="container narrow">
+    <div class="auth-card">
+      <div class="section-header">
+        <p class="section-label">HU-1</p>
+        <h2 class="section-title">Iniciar Sesión</h2>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="loginUser()">Ingresar</button>
+      <p class="auth-switch">¿No tenés cuenta? <a href="#" onclick="showSection('registro')">Registrarse</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REGISTRO ===== -->
+<section class="section" id="registro" style="display:none">
+  <div class="container narrow">
+    <div class="auth-card">
+      <div class="section-header">
+        <p class="section-label">HU-1</p>
+        <h2 class="section-title">Crear Cuenta</h2>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nombre</label><input type="text" id="regNombre" placeholder="Juan"></div>
+        <div class="form-group"><label>Apellido</label><input type="text" id="regApellido" placeholder="Pérez"></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Teléfono</label><input type="tel" id="regTel" placeholder="+54 9 351..."></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 8 caracteres"></div>
+      <div class="form-group"><label>Confirmar contraseña</label><input type="password" id="regPass2" placeholder="Repetir contraseña"></div>
+      <button class="btn-primary" style="width:100%" onclick="registerUser()">Crear Cuenta</button>
+      <p class="auth-switch">¿Ya tenés cuenta? <a href="#" onclick="showSection('login')">Iniciar sesión</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COTIZACIÓN ===== -->
+<section class="section" id="cotizacion" style="display:none">
+  <div class="container narrow">
+    <div class="auth-card">
+      <div class="section-header">
+        <p class="section-label">HU-4</p>
+        <h2 class="section-title">Solicitar Cotización</h2>
+      </div>
+      <div class="form-group"><label>Tipo de joya</label>
+        <select id="cotTipo"><option>Anillo</option><option>Collar</option><option>Pulsera</option><option>Aros</option><option>Otro</option></select>
+      </div>
+      <div class="form-group"><label>Material preferido</label>
+        <select id="cotMaterial"><option>Oro 18k</option><option>Oro 14k</option><option>Plata 925</option><option>Platino</option><option>Otro</option></select>
+      </div>
+      <div class="form-group"><label>Descripción detallada</label>
+        <textarea id="cotDesc" rows="4" placeholder="Describí el diseño que tenés en mente..."></textarea>
+      </div>
+      <div class="form-group"><label>Presupuesto estimado (ARS)</label>
+        <input type="number" id="cotPresupuesto" placeholder="50000">
+      </div>
+      <div class="form-group"><label>Tu email</label><input type="email" id="cotEmail"></div>
+      <div class="form-group"><label>Tu teléfono</label><input type="tel" id="cotTel"></div>
+      <button class="btn-primary" style="width:100%" onclick="submitCotizacion()">Enviar Solicitud</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHECKOUT / PAGO ===== -->
+<section class="section" id="checkout" style="display:none">
+  <div class="container narrow">
+    <div class="auth-card">
+      <div class="section-header">
+        <p class="section-label">HU-17</p>
+        <h2 class="section-title">Pago Seguro</h2>
+      </div>
+      <div id="checkoutSummary"></div>
+      <div class="form-group">
+        <label>Dirección de envío</label>
+        <input type="text" id="shipAddress" placeholder="Av. Colón 1234, Córdoba">
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Ciudad</label><input type="text" id="shipCity" placeholder="Córdoba"></div>
+        <div class="form-group"><label>Código Postal</label><input type="text" id="shipZip" placeholder="5000"></div>
+      </div>
+      <div class="payment-methods">
+        <p class="form-label">Método de pago</p>
+        <label class="pay-option active" id="payMP">
+          <input type="radio" name="payment" value="mercadopago" checked>
+          <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadopago/logo__large-v2@2x.png" alt="MercadoPago" style="height:24px">
+          <span>MercadoPago</span>
+        </label>
+        <label class="pay-option" id="payTransfer">
+          <input type="radio" name="payment" value="transferencia">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <span>Transferencia Bancaria</span>
+        </label>
+      </div>
+      <button class="btn-primary" style="width:100%;margin-top:2rem" onclick="procesarPago()">
+        Pagar con MercadoPago
+      </button>
+      <p style="text-align:center;font-size:0.8rem;color:#999;margin-top:1rem">
+        🔒 Pago 100% seguro · Tus datos están protegidos
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PEDIDOS ===== -->
+<section class="section" id="pedidos" style="display:none">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-3 · HU-12</p>
+      <h2 class="section-title">Mis Pedidos</h2>
+    </div>
+    <div id="ordersList"></div>
+  </div>
+</section>
+
+<!-- ===== HISTORIAL ===== -->
+<section class="section" id="historial" style="display:none">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-12</p>
+      <h2 class="section-title">Historial de Compras</h2>
+    </div>
+    <div id="historialList"></div>
+  </div>
+</section>
+
+<!-- ===== SOPORTE ===== -->
+<section class="section" id="soporte" style="display:none">
+  <div class="container narrow">
+    <div class="section-header">
+      <p class="section-label">HU-24 · HU-27</p>
+      <h2 class="section-title">Soporte al Cliente</h2>
+    </div>
+    <div class="support-grid">
+      <div class="support-card">
+        <h3>Chat en Línea</h3>
+        <div class="chat-box" id="chatBox"></div>
+        <div style="display:flex;gap:0.5rem;margin-top:1rem">
+          <input type="text" id="chatInput" placeholder="Escribí tu mensaje..." style="flex:1">
+          <button class="btn-primary" onclick="sendChat()">Enviar</button>
+        </div>
+      </div>
+      <div class="support-card">
+        <h3>Formulario de Contacto</h3>
+        <div class="form-group"><label>Asunto</label><input type="text" id="soporte_asunto"></div>
+        <div class="form-group"><label>Mensaje</label><textarea id="soporte_mensaje" rows="4"></textarea></div>
+        <button class="btn-primary" style="width:100%" onclick="enviarSoporte()">Enviar Consulta</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESEÑAS ===== -->
+<section class="reviews-section" id="reviewsSection">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-28</p>
+      <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+    </div>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+    <div style="text-align:center;margin-top:3rem" id="reviewFormWrap">
+      <button class="btn-ghost" onclick="toggleReviewForm()">Escribir una reseña</button>
+      <div id="reviewForm" style="display:none;margin-top:2rem;max-width:500px;margin-inline:auto">
+        <div class="form-group"><label>Tu nombre</label><input type="text" id="revNombre"></div>
+        <div class="form-group"><label>Calificación</label>
+          <div class="star-input" id="starInput">
+            <span onclick="setRating(1)">★</span><span onclick="setRating(2)">★</span><span onclick="setRating(3)">★</span><span onclick="setRating(4)">★</span><span onclick="setRating(5)">★</span>
+          </div>
+        </div>
+        <div class="form-group"><label>Comentario</label><textarea id="revComentario" rows="3"></textarea></div>
+        <button class="btn-primary" onclick="submitReview()">Publicar Reseña</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PANEL ADMIN ===== -->
+<section class="section" id="admin" style="display:none">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">HU-25</p>
+      <h2 class="section-title">Dashboard Administrativo</h2>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showAdminTab('dashboard')">Dashboard</button>
+      <button class="admin-tab" onclick="showAdminTab('productos')">Productos</button>
+      <button class="admin-tab" onclick="showAdminTab('ventas')">Ventas</button>
+      <button class="admin-tab" onclick="showAdminTab('empleados')">Empleados</button>
+      <button class="admin-tab" onclick="showAdminTab('materiales')">Materiales</button>
+      <button class="admin-tab" onclick="showAdminTab('proveedores')">Proveedores</button>
+      <button class="admin-tab" onclick="showAdminTab('stock')">Stock</button>
+      <button class="admin-tab" onclick="showAdminTab('descuentos')">Descuentos</button>
+      <button class="admin-tab" onclick="showAdminTab('sucursales')">Sucursales</button>
+      <button class="admin-tab" onclick="showAdminTab('usuarios')">Usuarios</button>
+      <button class="admin-tab" onclick="showAdminTab('reportes')">Reportes</button>
+      <button class="admin-tab" onclick="showAdminTab('config')">Config</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-panel" id="tab-dashboard">
+      <div class="kpi-grid">
+        <div class="kpi-card"><p class="kpi-label">Ventas Hoy</p><p class="kpi-value" id="kpiVentas">$0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Pedidos Pendientes</p><p class="kpi-value" id="kpiPedidos">0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Clientes</p><p class="kpi-value" id="kpiClientes">0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Productos</p><p class="kpi-value" id="kpiProductos">0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Stock Bajo</p><p class="kpi-value" id="kpiStock" style="color:#c0392b">0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Cotizaciones</p><p class="kpi-value" id="kpiCotizaciones">0</p></div>
+      </div>
+      <div class="admin-card" style="margin-top:2rem">
+        <h3>Últimas Ventas</h3>
+        <table class="admin-table" id="recentSalesTable">
+          <thead><tr><th>Fecha</th><th>Cliente</th><th>Producto</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody id="recentSalesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS ADMIN -->
+    <div class="admin-panel" id="tab-productos" style="display:none">
+      <button class="btn-primary" onclick="showProductForm()">+ Nuevo Producto</button>
+      <div id="productForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <h3>Nuevo Producto</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="pNombre"></div>
+            <div class="form-group"><label>Categoría</label><select id="pCategoria"><option>Anillos</option><option>Collares</option><option>Pulseras</option><option>Aros</option><option>Sets</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Precio (ARS)</label><input type="number" id="pPrecio"></div>
+            <div class="form-group"><label>Stock</label><input type="number" id="pStock"></div>
+          </div>
+          <div class="form-group"><label>Material</label><input type="text" id="pMaterial" placeholder="Oro 18k, Diamante 0.5ct"></div>
+          <div class="form-group"><label>Descripción</label><textarea id="pDesc" rows="3"></textarea></div>
+          <div class="form-group"><label>URL Imagen</label><input type="text" id="pImagen"></div>
+          <div style="display:flex;gap:1rem">
+            <button class="btn-primary" onclick="saveProduct()">Guardar</button>
+            <button class="btn-ghost" onclick="document.getElementById('productForm').style.display='none'">Cancelar</button>
+          </div>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead>
+        <tbody id="adminProductsTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- VENTAS ADMIN -->
+    <div class="admin-panel" id="tab-ventas" style="display:none">
+      <div class="filter-bar">
+        <input type="date" id="ventasFechaDesde">
+        <input type="date" id="ventasFechaHasta">
+        <select id="ventasEstado"><option value="">Todos</option><option>Pendiente</option><option>Procesando</option><option>Enviado</option><option>Entregado</option></select>
+        <button class="btn-secondary" onclick="loadVentas()">Filtrar</button>
+      </div>
+      <table class="admin-table" style="margin-top:1.5rem">
+        <thead><tr><th>Nro.</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Pago</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="ventasTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- EMPLEADOS -->
+    <div class="admin-panel" id="tab-empleados" style="display:none">
+      <button class="btn-primary" onclick="showEmpleadoForm()">+ Nuevo Empleado</button>
+      <div id="empleadoForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="eNombre"></div>
+            <div class="form-group"><label>Rol</label><select id="eRol"><option>Joyero</option><option>Vendedor</option><option>Administrador</option><option>Cajero</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" id="eEmail"></div>
+            <div class="form-group"><label>Salario (ARS)</label><input type="number" id="eSalario"></div>
+          </div>
+          <button class="btn-primary" onclick="saveEmpleado()">Guardar</button>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Nombre</th><th>Rol</th><th>Email</th><th>Salario</th><th>Estado</th></tr></thead>
+        <tbody id="empleadosTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- MATERIALES -->
+    <div class="admin-panel" id="tab-materiales" style="display:none">
+      <button class="btn-primary" onclick="showMaterialForm()">+ Nuevo Material</button>
+      <div id="materialForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <div class="form-row">
+            <div class="form-group"><label>Material</label><input type="text" id="mNombre" placeholder="Oro 18k"></div>
+            <div class="form-group"><label>Unidad</label><select id="mUnidad"><option>gramo</option><option>kilogramo</option><option>quilate</option><option>pieza</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Stock actual</label><input type="number" id="mStock"></div>
+            <div class="form-group"><label>Precio por unidad (ARS)</label><input type="number" id="mPrecio"></div>
+          </div>
+          <div class="form-group"><label>Proveedor</label><input type="text" id="mProveedor"></div>
+          <button class="btn-primary" onclick="saveMaterial()">Guardar</button>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Material</th><th>Stock</th><th>Unidad</th><th>Precio/U</th><th>Proveedor</th></tr></thead>
+        <tbody id="materialesTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- PROVEEDORES -->
+    <div class="admin-panel" id="tab-proveedores" style="display:none">
+      <button class="btn-primary" onclick="showProveedorForm()">+ Nuevo Proveedor</button>
+      <div id="proveedorForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <div class="form-row">
+            <div class="form-group"><label>Empresa</label><input type="text" id="pvEmpresa"></div>
+            <div class="form-group"><label>Contacto</label><input type="text" id="pvContacto"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" id="pvEmail"></div>
+            <div class="form-group"><label>Teléfono</label><input type="tel" id="pvTel"></div>
+          </div>
+          <div class="form-group"><label>Materiales que provee</label><input type="text" id="pvMateriales"></div>
+          <button class="btn-primary" onclick="saveProveedor()">Guardar</button>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Empresa</th><th>Contacto</th><th>Email</th><th>Teléfono</th></tr></thead>
+        <tbody id="proveedoresTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- STOCK -->
+    <div class="admin-panel" id="tab-stock" style="display:none">
+      <div class="section-header" style="margin-bottom:1rem"><h3>Gestión de Stock</h3></div>
+      <table class="admin-table">
+        <thead><tr><th>Producto</th><th>Stock Actual</th><th>Stock Mínimo</th><th>Estado</th><th>Ajustar</th></tr></thead>
+        <tbody id="stockTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- DESCUENTOS -->
+    <div class="admin-panel" id="tab-descuentos" style="display:none">
+      <button class="btn-primary" onclick="showDescuentoForm()">+ Nuevo Descuento</button>
+      <div id="descuentoForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <div class="form-row">
+            <div class="form-group"><label>Código</label><input type="text" id="dCodigo" placeholder="PROMO20"></div>
+            <div class="form-group"><label>Descuento (%)</label><input type="number" id="dPorcentaje" min="1" max="100"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Válido desde</label><input type="date" id="dDesde"></div>
+            <div class="form-group"><label>Válido hasta</label><input type="date" id="dHasta"></div>
+          </div>
+          <button class="btn-primary" onclick="saveDescuento()">Guardar</button>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Código</th><th>Descuento</th><th>Válido desde</th><th>Válido hasta</th><th>Estado</th></tr></thead>
+        <tbody id="descuentosTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- SUCURSALES -->
+    <div class="admin-panel" id="tab-sucursales" style="display:none">
+      <button class="btn-primary" onclick="showSucursalForm()">+ Nueva Sucursal</button>
+      <div id="sucursalForm" style="display:none;margin-top:2rem">
+        <div class="admin-card">
+          <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="sNombre"></div>
+            <div class="form-group"><label>Ciudad</label><input type="text" id="sCiudad"></div>
+          </div>
+          <div class="form-group"><label>Dirección</label><input type="text" id="sDireccion"></div>
+          <div class="form-group"><label>Teléfono</label><input type="tel" id="sTel"></div>
+          <button class="btn-primary" onclick="saveSucursal()">Guardar</button>
+        </div>
+      </div>
+      <table class="admin-table" style="margin-top:2rem">
+        <thead><tr><th>Nombre</th><th>Ciudad</th><th>Dirección</th><th>Teléfono</th></tr></thead>
+        <tbody id="sucursalesTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- USUARIOS Y ROLES -->
+    <div class="admin-panel" id="tab-usuarios" style="display:none">
+      <table class="admin-table">
+        <thead><tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="usuariosTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- REPORTES -->
+    <div class="admin-panel" id="tab-reportes" style="display:none">
+      <div class="kpi-grid">
+        <div class="kpi-card"><p class="kpi-label">Ventas del mes</p><p class="kpi-value" id="rVentasMes">$0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Ticket promedio</p><p class="kpi-value" id="rTicketProm">$0</p></div>
+        <div class="kpi-card"><p class="kpi-label">Productos + vendidos</p><p class="kpi-value" id="rTopProducto">—</p></div>
+        <div class="kpi-card"><p class="kpi-label">Devoluciones</p><p class="kpi-value" id="rDevoluciones">0</p></div>
+      </div>
+      <div class="admin-card" style="margin-top:2rem">
+        <h3>Auditoría del Sistema</h3>
+        <table class="admin-table">
+          <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Módulo</th></tr></thead>
+          <tbody id="auditoriaTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div class="admin-panel" id="tab-config" style="display:none">
+      <div class="admin-card">
+        <h3>Configuración General</h3>
+        <div class="form-group"><label>Nombre de la tienda</label><input type="text" value="Legrand Joyería" id="cfgNombre"></div>
+        <div class="form-group"><label>Email de contacto</label><input type="email" value="contacto@legrand.com.ar" id="cfgEmail"></div>
+        <div class="form-group"><label>Teléfono</label><input type="tel" value="+54 351 4000000" id="cfgTel"></div>
+        <div class="form-group"><label>MercadoPago Access Token</label><input type="text" placeholder="APP_USR-..." id="cfgMP"></div>
+        <div class="form-group"><label>Supabase URL</label><input type="text" placeholder="https://xxx.supabase.co" id="cfgSB"></div>
+        <div class="form-group"><label>Supabase Anon Key</label><input type="text" placeholder="eyJ..." id="cfgSBKey"></div>
+        <button class="btn-primary" onclick="saveConfig()">Guardar Configuración</button>
+        <hr style="border-color:#e8ddd0;margin:2rem 0">
+        <h3>Backup y Recuperación</h3>
+        <p style="color:#888;font-size:0.9rem;margin-bottom:1rem">Exportá todos los datos del sistema en formato JSON.</p>
+        <div style="display:flex;gap:1rem">
+          <button class="btn-secondary" onclick="exportBackup()">Exportar Backup</button>
+          <button class="btn-ghost" onclick="document.getElementById('backupFile').click()">Importar Backup</button>
+          <input type="file" id="backupFile" style="display:none" onchange="importBackup(event)">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODAL PRODUCTO ===== -->
+<div class="modal-overlay" id="productModal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <p class="logo" style="font-size:2rem;margin-bottom:1rem">LEGRAND</p>
+      <p>Joyería de alta gama desde 1985.<br>Tradición, elegancia y calidad sin igual.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Colecciones</h4>
+      <a href="#" onclick="filterByCategory('Anillos')">Anillos</a>
+      <a href="#" onclick="filterByCategory('Collares')">Collares</a>
+      <a href="#" onclick="filterByCategory('Pulseras')">Pulseras</a>
+      <a href="#" onclick="filterByCategory('Aros')">Aros</a>
+    </div>
+    <div class="footer-links">
+      <h4>Servicios</h4>
+      <a href="#" onclick="showSection('cotizacion')">Cotizaciones</a>
+      <a href="#" onclick="showSection('soporte')">Soporte</a>
+      <a href="#">Envíos</a>
+      <a href="#">Devoluciones</a>
+    </div>
+    <div class="footer-links">
+      <h4>Contacto</h4>
+      <p>Av. Colón 1234, Córdoba</p>
+      <p>+54 351 400-0000</p>
+      <p>contacto@legrand.com.ar</p>
+      <p>Lun–Sáb: 10–20hs</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Legrand Joyería. Todos los derechos reservados.</p>
+    <div class="footer-pay">
+      <span>Pagos seguros con</span>
+      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadopago/logo__large-v2@2x.png" alt="MercadoPago" style="height:20px;filter:brightness(0) invert(1)">
+    </div>
+  </div>
+</footer>
+
+<script src="supabase-client.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
