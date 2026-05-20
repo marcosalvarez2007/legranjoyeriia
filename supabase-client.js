@@ -1,8 +1,8 @@
 // ===== SUPABASE CLIENT =====
 // Reemplazá estos valores con los de tu proyecto en https://supabase.com/dashboard
 
-const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co'; // ← reemplazar
-const SUPABASE_ANON_KEY = 'eyJ...TU-ANON-KEY...'; // ← reemplazar
+const SUPABASE_URL = 'https://pmebcstaequvgsstoxbt.supabase.co'; // ← reemplazar
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZWJjc3RhZXF1dmdzc3RveGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMjg2MDYsImV4cCI6MjA5NDgwNDYwNn0.KpWyxf-ntsBJ2GnYvgD_VcNWn2c4D1ymR3LYwB67jfA'; // ← reemplazar
 
 // Cliente Supabase simple (sin SDK, usando fetch directo para máxima compatibilidad)
 const supabase = {
